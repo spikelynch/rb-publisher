@@ -1,0 +1,11 @@
+{
+	"redbox": {
+      "version": "Redbox2",
+      "baseURL": "http://localhost:1500",
+      "apiKey": "####",
+      "branding": "default",
+      "portal": "rdmp"
+    },
+
+	"publications": "./test/public"
+}

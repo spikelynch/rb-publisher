@@ -2,7 +2,7 @@
   "name": "rb-publisher",
   "version": "1.0.0",
   "description": "Simple publications from redbox-portal via its api",
-  "main": "index.js",
+  "main": "rb-publish.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
