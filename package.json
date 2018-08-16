@@ -1,0 +1,37 @@
+{
+  "name": "rb-publisher",
+  "version": "1.0.0",
+  "description": "Simple publications from redbox-portal via its api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spikelynch/rb-publisher.git"
+  },
+  "keywords": [
+    "redbox",
+    "repository",
+    "publication"
+  ],
+  "author": "Mike Lynch",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/spikelynch/rb-publisher/issues"
+  },
+  "homepage": "https://github.com/spikelynch/rb-publisher#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "node-ts": "^2.1.2",
+    "typescript": "^3.0.1"
+  },
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "axios-debug": "0.0.4",
+    "config": "^2.0.1",
+    "redboxresearchdata-api": "^1.0.0",
+    "uts-provisioner-api": "^1.0.8"
+  }
+}
