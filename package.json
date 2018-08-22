@@ -28,10 +28,12 @@
     "typescript": "^3.0.1"
   },
   "dependencies": {
+    "@types/winston": "^2.4.4",
     "argparse": "^1.0.10",
     "axios-debug": "0.0.4",
     "config": "^2.0.1",
     "redboxresearchdata-api": "^1.0.3",
-    "uts-provisioner-api": "^1.0.8"
+    "uts-provisioner-api": "^1.0.8",
+    "winston": "^3.0.0"
   }
 }
