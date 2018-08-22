@@ -9,6 +9,7 @@ const mustache = require('mustache');
 const fs = require('fs-extra');
 const config = require('config');
 const path = require('path');
+const filesize = require('filesize');
 const winston = require('winston');
 
 import { Redbox, Redbox1, Redbox2 } from 'redboxresearchdata-api';
@@ -68,16 +69,16 @@ async function publish_dataset(options: Object): Promise<void> {
 
 	const attachments = record['dataLocations'].filter((a) => a['type'] === 'attachment');
 
-	const downloads = [];
 	for( var i = 0; i < attachments.length; i++ ) {
 		const d = await fetch_attachment(rb, droid, outdir, attachments[i]);
 		if( d['error'] ) {
 			logger.error(`Couldn't fetch attachment ${droid} ${d['fileId']}: ${d['error']}`);
+		} else {
+			attachments[i]['size'] = filesize(d['size']);
 		}
-		downloads.push(d);
 	}
 
-	record['downloads'] = downloads;
+	record['dataLocationsAny'] = ( attachments.length > 0 ) ? '': attachments.length;
 
 	const indexpath = path.join(outdir, 'index.html');
 	logger.debug(`Writing landing page to ${indexpath}`);
@@ -95,8 +96,8 @@ async function publish_dataset(options: Object): Promise<void> {
 
 }
 
-// fetch one attachment, return a hash which goes into the template as 
-// the download link
+// fetch one attachment, returns a hash with the filesize
+// or an error
 
 async function fetch_attachment(rb, oid, outdir, a) {
 	logger.debug(`fetching attachment: ${a['name']} ${a['fileId']}`);
@@ -104,14 +105,10 @@ async function fetch_attachment(rb, oid, outdir, a) {
 	const ds = await rb.readDatastream(oid, a['fileId']);
 	if( ds ) {
 		logger.debug("Writing to " + fpath);
-		const r = await writefile(ds, fpath);
-		if( r ) {
-			return {
-				'url': a['name'],
-				'mimetype': a['mimetype'],
-				'size': a['size'],
-				'name': a['name']
-			} 
+		const s = await writefile(ds, fpath);
+		if( s ) {
+			const stat = await fs.stat(fpath);
+			return { 'id': a['fileId'], 'size': stat.size };
 		}
 	}
 	return {

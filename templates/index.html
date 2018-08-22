@@ -5,25 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/vnd.microsoft.com" href="favicon.ico">
 
     <title>UTS Research Data | {{ title }}</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="../bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
     <!-- Navbar, footer and overrides to Bootstrap -->
-    <link href="/css/main.css" rel="stylesheet">
+    <link href="../css/main.css" rel="stylesheet">
 
     <!-- Styles for the dataset grid -->
-    <link href="/css/dataset.css" rel="stylesheet">
+    <link href="../css/dataset.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="/bootstrap/assets/js/html5shiv.js"></script>
       <script src="/bootstrap/assets/js/respond.min.js"></script>
     <![endif]-->
-    <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
 <!--[if IE 7]>
     <link rel="stylesheet" href="/font-awesome/css/font-awesome-ie7.min.css">
 <![endif]-->
@@ -54,69 +53,66 @@
         </div>
       </div>
 
-    <div class="container">
+      <div class="container">
 
 
 
-<div class="page-header">
-      <h1>{{ title }}</h1>
-   </div>
+        <div class="page-header">
+          <h1>{{ title }}</h1>
+        </div>
 
 
-   <div class="row">
-      <div class="field_label col-md-2">Description</div>
-      <div class="col-md-8">
-        {{ description }}
+        <div class="row">
+          <div class="field_label col-md-2">Description</div>
+          <div class="col-md-8">
+              {{ description }}
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="field_label col-md-2">Publication date</div>
+            <div class="col-md-8">{{ citation_publication_date }}</div>
+        </div>
+
+
+        <div class="row">
+           <div class="field_label col-md-10">Creators</div>
+        </div>
+
+        {{ #creators }}
+        <div class="row">
+          <div class="col-md-8">
+            {{ text_full_name }}<br />
+            <a href="mailto:{{ email }}">{{ email }}</a><br />
+          </div>
+        </div>
+        {{ /creators }}
+
+        <div class="row">
+          <div class="field_label col-md-2">Licence</div>
+          <div class="col-md-8">
+            <a class="licence" href="{{ licence_statement_url }}">{{ licence_statement }}</a>
+          </div>
+        </div>
+
+        {{ #dataLocationsAny }}
+          <div class="row">
+            <div class="field_label col-md-10">Data Files</div>
+          </div>
+        {{ /dataLocationsAny }}
+
+        {{ #dataLocations }}
+          <div class="datastream row">
+            <div class="field-label col-md-4">Download</div>
+            <div class="col-md-8">
+              <a class="download" href="{{ name }}">{{ name }} ({{ size }}) <i class="icon-download-alt"></i></a>
+            </div>
+          </div>
+        {{ /dataLocations }}
+
       </div>
-   </div>
 
-   <div class="row">
-      <div class="field_label col-md-2">Date Created</div>
-      <div class="col-md-8">{{ citation_publication_date }}</div>
-   </div>
-
-
-   <div class="row">
-      <div class="field_label col-md-10">Created By</div>
-   </div>
-   {{ #creators }}
-   <div class="row">
-      <div class="col-md-8">
-        {{ title }} {{ givennames }} {{ familyname }}<br />
-        <a href="mailto:{{ email }}">{{ email }}</a><br />
-   </div>
-   {{ /creators }}
-   </div>
-
-   <div class="row">
-      <div class="field_label col-md-2">Licence</div>
-      <div class="col-md-8">
-          <a class="licence" href="{{ licence_statement_url }}">{{ licence_statement }}</a>
-      </div>
-   </div>
-
-   {{ #downloads }}
-   <div class="datastream row">
-       <div class="field-label col-md-4">Download</div>
-       <div class="col-md-8">
-<a class="download" href="{{ url }}">{{ filename }} ({{ size }}) <i class="icon-download-alt"></i></a>
-</div>
-   </div>
-   {{ /downloads }}
-
-
-
-  </div>
-
-
-
-      </div>
-   </div>
-
-    </div>
-    </div>
-
-    <div id="footer">
+      <div id="footer">
         <div id="footer-left"  class="container">
           &copy; 2018 copyright UTS - CRICOS Provider No: 00099F<br />
           This page is authorised by Mike Lynch / Comments to <a href="mailto:eResearch-IT@uts.edu.au">eResearch-IT@uts.edu.au</a><br />
@@ -132,8 +128,8 @@
           <a href="https://www.atn.edu.au">UTS is a member of the<br />Australian Technology Network of Universities</a>
         </div>
 
+      </div>
     </div>
-
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
