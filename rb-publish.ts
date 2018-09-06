@@ -15,6 +15,8 @@ const winston = require('winston');
 import { Redbox, Redbox1, Redbox2 } from 'redboxresearchdata-api';
 import { FilesApp, FilesDataSet } from 'uts-provisioner-api';
 
+import { Collection } from 'calcyte';
+
 const DEFAULT_CONSOLE_LOG = 'debug';
 const DEFAULT_FILE_LOG = 'info';
 
@@ -80,19 +82,24 @@ async function publish_dataset(options: Object): Promise<void> {
 
 	record['dataLocationsAny'] = ( attachments.length > 0 ) ? '': attachments.length;
 
-	const indexpath = path.join(outdir, 'index.html');
-	logger.debug(`Writing landing page to ${indexpath}`);
-	const t = await fs.readFile(template, 'utf8');
-  await fs.writeFile(indexpath, mustache.to_html(t, record));
+	logger.debug(`Creating DataCrate at ${outdir}`);
+
+	const datacrate = new Collection();
+
+	datacrate.read(outdir);
+	await datacrate.to_json_ld();
+	datacrate.to_html();
+
+	// const indexpath = path.join(outdir, 'index.html');
+	// logger.debug(`Writing landing page to ${indexpath}`);
+	// const t = await fs.readFile(template, 'utf8');
+ //  await fs.writeFile(indexpath, mustache.to_html(t, record));
 
 	if( options['dump'] ) {
 		const recordjs = path.join(outdir, 'metadata.json');
-		logger.debug(`Dumping record metadata to ${recordjs}`);
+		logger.debug(`Dumping publication metadata to ${recordjs}`);
 		await fs.writeJSON(recordjs, record, {spaces: '\t'});
 	}
-
-
-
 
 }
 
