@@ -5,7 +5,6 @@
 import { ArgumentParser } from 'argparse';
 import { Readable } from 'stream';
 
-const mustache = require('mustache');
 const fs = require('fs-extra');
 const config = require('config');
 const path = require('path');
@@ -15,7 +14,9 @@ const winston = require('winston');
 import { Redbox, Redbox1, Redbox2 } from 'redboxresearchdata-api';
 import { FilesApp, FilesDataSet } from 'uts-provisioner-api';
 
-import { Collection } from 'calcyte';
+import { Index } from 'calcyte';
+const datacrate = require('datacrate').catalog;
+
 
 const DEFAULT_CONSOLE_LOG = 'debug';
 const DEFAULT_FILE_LOG = 'info';
@@ -34,6 +35,7 @@ const trans = [
 ];
 
 const logger = winston.createLogger({ transports: trans });
+
 
 async function publish_dataset(options: Object): Promise<void> {
 	const oid = options['oid'];
@@ -63,11 +65,9 @@ async function publish_dataset(options: Object): Promise<void> {
 
 	logger.debug(`Data record is ${droid}`);
 
-	if( options['dump'] ) {
-		const outfile = path.join(outdir, oid + '.json');
-		logger.debug(`Dumping record metadata to ${outfile}`);
-		await fs.writeJSON(outfile, record, {spaces: '\t'});
-	}
+	const recordjs = path.join(outdir, config.get('datacrate.datapub_json'));
+	logger.debug(`Writing publication metadata to ${recordjs}`);
+	await fs.writeJSON(recordjs, record, {spaces: '\t'});
 
 	const attachments = record['dataLocations'].filter((a) => a['type'] === 'attachment');
 
@@ -80,26 +80,30 @@ async function publish_dataset(options: Object): Promise<void> {
 		}
 	}
 
-	record['dataLocationsAny'] = ( attachments.length > 0 ) ? '': attachments.length;
 
 	logger.debug(`Creating DataCrate at ${outdir}`);
 
-	const datacrate = new Collection();
+	const org = config.get('datacrate.organization');
+	const catalog_html = path.join(outdir, config.get('datacrate.catalog_html'));
+	const catalog_json = path.join(outdir, config.get('datacrate.catalog_json'));
 
-	datacrate.read(outdir);
-	await datacrate.to_json_ld();
-	datacrate.to_html();
+	const catalog = await datacrate.datapub2catalog({
+		'id': oid,
+		'datapub': record,
+		'organisation': org,
+		'owner': "admin",
+		'approver': "admin"
+	});
 
-	// const indexpath = path.join(outdir, 'index.html');
-	// logger.debug(`Writing landing page to ${indexpath}`);
-	// const t = await fs.readFile(template, 'utf8');
- //  await fs.writeFile(indexpath, mustache.to_html(t, record));
+	// TODO: trim context
 
-	if( options['dump'] ) {
-		const recordjs = path.join(outdir, 'metadata.json');
-		logger.debug(`Dumping publication metadata to ${recordjs}`);
-		await fs.writeJSON(recordjs, record, {spaces: '\t'});
-	}
+	await fs.writeJson(catalog_json, catalog);
+
+	const index = new Index();
+
+	index.init(catalog, catalog_html, false);
+	index.make_index_html("text_citation", "zip_path");
+
 
 }
 
@@ -150,26 +154,23 @@ parser.addArgument(
 );
 
 parser.addArgument(
-	[ '-d', '--dump'],
-	{
-		help: "Dump a copy of the object metadata in the output directory",
-		action: "storeTrue"
-	}
-);	
-
-parser.addArgument(
 	[ '-p', '--page'],
 	{
 		help: "Only regenerate the landing page, don't download attachments",
 		action: "storeTrue"
 	}
-);	
+);
+
+parser.addArgument(
+	[ '-m', '--metadata' ],
+	{
+		help: "Pass in metadata as either a JSON filename or literal"
+	}
+);
 
 
 const args = parser.parseArgs();
 const rbcf = config.get('redbox');
-
-
 
 let redbox : Redbox;
 
@@ -186,12 +187,14 @@ const OUTDIR = './output';
 publish_dataset({
 	redbox: redbox,
 	oid: args['record'],
-	template: config.get('template'),
 	output: OUTDIR,
-	dump: args['dump'],
-	page: args['page']
+	page: args['page'],
+	metadata: args['metadata']
 }).catch((e) => {
-	logger.error("Publication failed: " + e);
+	logger.error("An error prevented publication");
+	logger.error(`${e.name}: ${e.message}`);
+	logger.error(e.stack);
+
 });
 
 

@@ -35,7 +35,8 @@
     "filesize": "^3.6.1",
     "redboxresearchdata-api": "^1.0.3",
     "uts-provisioner-api": "^1.0.8",
-    "winston": "^3.0.0",
-    "calcyte": "^0.3.0"
+    "calcyte": "^0.3.0",
+    "datacrate": "^1.0.0",
+    "winston": "^3.0.0"
   }
 }
